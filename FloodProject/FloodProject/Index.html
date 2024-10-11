@@ -12,7 +12,7 @@
 
 
   <body>
-    <div style="margin: auto; width:680px; height: 460px" id="mapContainer"></div>
+    <div style="margin: auto; width: 100vw; height: 100vw" id="mapContainer"></div>
     <script>
       // Initialize the platform object
       var platform = new H.service.Platform({
@@ -49,6 +49,83 @@
 
       ui.addControl('rectangle', zoomRectangle);
 
+      //Chanon Sahanon Edited: 10/10/24 19.08
+      var markers = [];
+
+
+      //add and remove markers
+      function addMarker(coords) {
+        var marker = new H.map.Marker(coords);
+
+        //remove
+        /*marker.addEventListener('tap', function() {
+          map.removeObject(marker);
+          markers = markers.filter(m => m !== marker);
+          evt.stopPropagation();
+        });*/
+        
+        // Create an info bubble with custom text
+        var bubble = new H.ui.InfoBubble(coords, {
+        content: `<div>กุจะบ้าตาย</div>` // Custom content here
+         });
+
+        // Show the info bubble when the marker is tapped
+         marker.addEventListener('tap', function () {
+
+        // Add the bubble to the UI
+        ui.addBubble(bubble);
+        });
+
+
+        //add Marker to array
+        map.addObject(marker);
+        markers.push(marker);
+      }
+
+
+      var initialCoords = {lng: 100.303441, lat: 13.7250482};
+      addMarker(initialCoords);
+
+      map.setCenter(initialCoords);
+
+      map.addEventListener('tap', function(evt) {
+
+        // Check if the clicked element is not part of the bubble UI
+        if (evt.target instanceof H.map.Marker) {
+        // Do nothing if the tap is on a marker
+        return;
+        
+    }
+        
+        var coords = map.screenToGeo(evt.currentPointer.viewportX, evt.currentPointer.viewportY);
+
+        addMarker({ lat: coords.lat, lng: coords.lng});
+          
+      }) ;
+      // Stop event propagation when closing the bubble
+      ui.addEventListener('tap', function (evt) {
+          evt.stopPropagation();
+      });
+
+
+    
+
+      const spireCoordinates = {
+      lat: 13.7250482,
+      lng: 100.303441
+      };
+
+      
+      
+      
+
+      
+
+      
+     
+
+
+    
     </script>
 
   </body>
