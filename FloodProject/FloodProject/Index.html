@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" ></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+  </head>
+
+
+
+  <body>
+    <div style="margin: auto; width:680px; height: 460px" id="mapContainer"></div>
+    <script>
+      // Initialize the platform object
+      var platform = new H.service.Platform({
+        'apikey': 'vhuh8tZ13db680ljmKdcJ-ywdHQEN9EpzNxJGcLf4xs'
+      });
+
+      // Obtain the default map types from the platform object
+      var maptypes = platform.createDefaultLayers();
+
+      // Instantiate (and display) the map
+      var map = new H.Map(
+        document.getElementById('mapContainer'),
+        maptypes.vector.normal.map,
+        {
+          zoom: 10,
+          center: { lng: 100.303441, lat: 13.7250482 } 
+        });
+
+      // Create the default UI:
+      const ui = H.ui.UI.createDefault(map, maptypes);
+
+      // Enable the event system to capture user inputs
+      var mapEvents = new H.mapevents.MapEvents(map);
+
+      // Instantiate the default behavior (dragging, zooming, etc.)
+      var behavior = new H.mapevents.Behavior(mapEvents);
+
+      const zoomRectangle = new H.ui.ZoomRectangle({
+
+      // Position the control on the map's viewport
+      alignment: H.ui.LayoutAlignment.LEFT_BOTTOM
+      });
+
+
+      ui.addControl('rectangle', zoomRectangle);
+
+    </script>
+
+  </body>
+</html>
