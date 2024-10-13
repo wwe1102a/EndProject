@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-core.js"></script>
+    <script src="https://js.api.here.com/v3/3.1/mapsjs-service.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js"></script>
+    <script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://js.api.here.com/v3/3.1/mapsjs-ui.css" />
+    <link rel=" stylesheet" href="Css.css">
+    <style>
+      
+      
+    </style>
+  </head>
+
+  <body>
+    
+    <!-- Add a button for toggling between adding/removing bubbles -->
+    <button id="toggleButton">Remove Bubble</button>
+
+    <div style="margin: auto; width: 100vw; height: 100vw" id="mapContainer"></div>
+
+    <script>
+      // Initialize the platform object
+      var platform = new H.service.Platform({
+        'apikey': 'vhuh8tZ13db680ljmKdcJ-ywdHQEN9EpzNxJGcLf4xs'
+      });
+
+      // Obtain the default map types from the platform object
+      var maptypes = platform.createDefaultLayers();
+
+      // Instantiate (and display) the map
+      var map = new H.Map(
+        document.getElementById('mapContainer'),
+        maptypes.vector.normal.map,
+        {
+          zoom: 10,
+          center: { lng: 100.303441, lat: 13.7250482 }
+        });
+
+      // Create the default UI:
+      const ui = H.ui.UI.createDefault(map, maptypes);
+
+      // Enable the event system to capture user inputs
+      var mapEvents = new H.mapevents.MapEvents(map);
+
+      // Instantiate the default behavior (dragging, zooming, etc.)
+      var behavior = new H.mapevents.Behavior(mapEvents);
+
+      const zoomRectangle = new H.ui.ZoomRectangle({
+        alignment: H.ui.LayoutAlignment.LEFT_BOTTOM
+      });
+
+      ui.addControl('rectangle', zoomRectangle);
+
+      // Initialize variables for tracking markers and bubbles
+      var markers = [];
+      var currentBubble = null;
+      var isAddMode = true; // true = add mode, false = remove mode
+
+      // Add and remove markers
+      function addMarker(coords) {
+        // Prompt the user for bubble content
+        var description = prompt("Enter a description for the bubble:");
+
+        var marker = new H.map.Marker(coords);
+
+        // Create an info bubble with the custom user input
+        var bubble = new H.ui.InfoBubble(coords, {
+          content: `<div>${description || 'No description provided'}</div>` // Custom content here
+        });
+
+        // Show the info bubble or remove marker when clicked
+        marker.addEventListener('tap', function () {
+          if (isAddMode) {
+            // Add mode: show bubble
+            if (currentBubble) {
+              ui.removeBubble(currentBubble);
+            }
+            ui.addBubble(bubble);
+            currentBubble = bubble;
+          } else {
+            // Remove mode: remove marker and bubble
+            map.removeObject(marker);
+            markers = markers.filter(m => m !== marker);
+            if (currentBubble) {
+              ui.removeBubble(currentBubble);
+              currentBubble = null;
+            }
+          }
+        });
+
+        // Add marker to the array and map
+        map.addObject(marker);
+        markers.push(marker);
+      }
+
+      var initialCoords = { lng: 100.303441, lat: 13.7250482 };
+      addMarker(initialCoords);
+
+      map.setCenter(initialCoords);
+
+      // Add event listener for map click (adding new markers)
+      map.addEventListener('tap', function (evt) {
+        // Check if the clicked element is not part of the bubble UI
+        if (evt.target instanceof H.map.Marker) {
+          return; // Do nothing if the tap is on a marker
+        }
+
+        // Get the coordinates of the click
+        var coords = map.screenToGeo(evt.currentPointer.viewportX, evt.currentPointer.viewportY);
+
+        // Close the current bubble if it's open
+        if (currentBubble) {
+          ui.removeBubble(currentBubble);
+          currentBubble = null;
+        }
+
+        // Add a new marker at the clicked coordinates
+        addMarker({ lat: coords.lat, lng: coords.lng });
+      });
+
+      // Handle the toggle button functionality
+      var toggleButton = document.getElementById('toggleButton');
+      toggleButton.addEventListener('click', function () {
+        isAddMode = !isAddMode; // Toggle the mode
+
+        // Update the button text and style based on the mode
+        if (isAddMode) {
+          toggleButton.textContent = "Remove Bubble";
+          toggleButton.classList.remove('remove');
+        } else {
+          toggleButton.textContent = "Remove Bubble Mode";
+          toggleButton.classList.add('remove');
+        }
+      });
+    </script>
+
+  </body>
+</html>
+
