@@ -29,3 +29,21 @@ map {
   #toggleButton.remove {
     background-color: red;
   }
+
+
+  #toggleButtonPolygon {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    padding: 10px 20px;
+    background-color: rgb(31, 84, 231);
+    color: white;
+    border: none;
+    cursor: pointer;
+    z-index: 1000; /* Make sure it is on top of the map */
+  }
+
+  #toggleButtonPolygon.remove {
+    background-color: red;
+  }
+

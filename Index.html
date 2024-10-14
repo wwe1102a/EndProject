@@ -18,6 +18,7 @@
     
     <!-- Add a button for toggling between adding/removing bubbles -->
     <button id="toggleButton">Remove Bubble</button>
+    <button id="toggleButtonPolygon">Create Polygon Mode</button>
 
     <div style="margin: auto; width: 100vw; height: 100vw" id="mapContainer"></div>
 
@@ -134,7 +135,31 @@
           toggleButton.textContent = "Remove Bubble Mode";
           toggleButton.classList.add('remove');
         }
+
       });
+
+    //add polygon 14/10/2024 
+
+
+    // เก็บค่าพิกัดเมื่อผู้ใช้คลิกบนแผนที่
+    var drawingCoords = [];
+    var isDrawing = false;
+    var drawingEnabled = true; // สถานะของการวาด
+
+
+    document.getElementById('toggleButtonPolygon').addEventListener('click', function() {
+    drawingEnabled = !drawingEnabled; // สลับสถานะเปิด/ปิด
+    if (drawingEnabled) {
+      this.textContent = "Create Polygon Mode"; // เปลี่ยนข้อความปุ่ม
+    } else {
+      this.textContent = "Create Polygon Mode on"; // เปลี่ยนข้อความปุ่ม
+      resetDrawing(); // ล้างการวาดถ้าปิดใช้งาน
+    }
+  });
+
+
+
+  
     </script>
 
   </body>
