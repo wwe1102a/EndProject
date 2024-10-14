@@ -18,7 +18,8 @@
     
     <!-- Add a button for toggling between adding/removing bubbles -->
     <button id="toggleButton">Remove Bubble</button>
-    <button id="toggleButtonPolygon">Create Polygon Mode</button>
+    <button id="toggleButtonPolyLine">Create PolyLine Mode</button>
+    <button id="toggleButtonPolyLineRemove">Remove Polyline</button>
 
     <div style="margin: auto; width: 100vw; height: 100vw" id="mapContainer"></div>
 
@@ -141,21 +142,87 @@
     //add polygon 14/10/2024 
 
 
-    // เก็บค่าพิกัดเมื่อผู้ใช้คลิกบนแผนที่
+    // get arrays polyline
     var drawingCoords = [];
     var isDrawing = false;
-    var drawingEnabled = true; // สถานะของการวาด
+    var drawingEnabled = true; // drawing mode
+    var polyline; 
+    var markers = []; 
 
 
-    document.getElementById('toggleButtonPolygon').addEventListener('click', function() {
-    drawingEnabled = !drawingEnabled; // สลับสถานะเปิด/ปิด
+    document.getElementById('toggleButtonPolyLine').addEventListener('click', function() {
+    drawingEnabled = !drawingEnabled; // switching on/off polyline mode
     if (drawingEnabled) {
-      this.textContent = "Create Polygon Mode"; // เปลี่ยนข้อความปุ่ม
+      this.textContent = "Create Polygon Mode"; 
+      this.classList.remove('active') ;
     } else {
-      this.textContent = "Create Polygon Mode on"; // เปลี่ยนข้อความปุ่ม
-      resetDrawing(); // ล้างการวาดถ้าปิดใช้งาน
+      this.textContent = "Create Polygon Mode OFF"; 
+      this.classList.add('active') ;
     }
   });
+
+
+
+  // paint polyline event listener
+  map.addEventListener('tap', function(evt) {
+    if (drawingEnabled) {
+      var coord = map.screenToGeo(evt.currentPointer.viewportX, evt.currentPointer.viewportY);
+      drawingCoords.push({ lat: coord.lat, lng: coord.lng });
+
+      // start drawing
+      if (!isDrawing) {
+        isDrawing = true;
+      } else {
+
+        drawPolyline();
+      }
+    }
+  });
+
+  // function paint Polyline
+  function drawPolyline() {
+    if (drawingCoords.length > 1) {
+      if (polyline) {
+        map.removeObject(polyline);
+      }
+
+      // create GeoLineString from tap
+      var geoLineString = new H.geo.LineString();
+
+      drawingCoords.forEach(function(point) {
+        geoLineString.pushPoint(point);
+      });
+
+      // create Polyline with color
+      polyline = new H.map.Polyline(geoLineString, {
+        style: {
+          strokeColor: 'black',     
+          lineWidth: 4
+        }
+      });
+
+      // add Polyline on map
+      map.addObject(polyline);
+    }
+  }
+
+  // function reset drawing
+  function resetDrawing() {
+    drawingCoords = [];
+    isDrawing = false;
+    if (polyline) {
+      map.removeObject(polyline); 
+    }
+  }
+
+
+
+  
+
+
+
+
+
 
 
 
